@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe Smart Game</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet" />
+
+    <!-- Our CSS file -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════
+       MAIN CONTAINER
+  ════════════════════════════════════════════ -->
+    <div class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1 class="title">TIC TAC TOE</h1>
+            <p class="subtitle">Smart Game &nbsp;·&nbsp; Python Project &nbsp;·&nbsp; Web Edition</p>
+        </header>
+
+        <!-- GAME MODE SELECTOR -->
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btn-pvp" onclick="setMode('pvp')">
+                👥 Player vs Player
+            </button>
+            <button class="mode-btn" id="btn-pvc" onclick="setMode('pvc')">
+                🤖 Player vs Computer
+            </button>
+        </div>
+
+        <!-- SCOREBOARD -->
+        <div class="scoreboard">
+            <div class="score-card x-card">
+                <div class="score-label">✕ &nbsp; X WINS</div>
+                <div class="score-val" id="score-x">0</div>
+            </div>
+            <div class="score-card draw-card">
+                <div class="score-label">◈ &nbsp; DRAWS</div>
+                <div class="score-val" id="score-d">0</div>
+            </div>
+            <div class="score-card o-card">
+                <div class="score-label">○ &nbsp; O WINS</div>
+                <div class="score-val" id="score-o">0</div>
+            </div>
+        </div>
+
+        <!-- STATUS BAR -->
+        <div class="status-bar" id="status">Loading...</div>
+
+        <!-- GAME BOARD (cells injected by JS) -->
+        <div class="board-wrap">
+            <div class="board" id="board"></div>
+        </div>
+
+        <!-- CONTROL BUTTONS -->
+        <div class="controls">
+            <button class="ctrl-btn restart" onclick="startGame()">↺ Restart</button>
+            <button class="ctrl-btn reset" onclick="resetScore()">⊘ Reset Score</button>
+            <button class="ctrl-btn dark-toggle" id="theme-btn" onclick="toggleTheme()">☀ Light Mode</button>
+        </div>
+
+        <!-- STATISTICS PANEL -->
+        <div class="stats-panel">
+            <div class="stats-title">📊 &nbsp; Game Statistics</div>
+            <div class="stat-row">
+                <span class="stat-key">Total Games Played</span>
+                <span class="stat-value" id="stat-total">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-key">Fastest Win (moves)</span>
+                <span class="stat-value" id="stat-fastest">—</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-key">Moves This Game</span>
+                <span class="stat-value" id="stat-moves">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-key">X Win Rate</span>
+                <span class="stat-value" id="stat-rate">—</span>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <!-- WIN / DRAW POPUP OVERLAY -->
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <div class="popup-icon" id="popup-icon">🏆</div>
+            <div class="popup-title" id="popup-title">PLAYER X WINS</div>
+            <div class="popup-sub" id="popup-sub">Great move!</div>
+            <button class="popup-play-btn" onclick="closePopup()">▶ PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <!-- Our JavaScript file -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>

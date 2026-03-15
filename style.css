@@ -1,0 +1,567 @@
+/* ═══════════════════════════════════════════════════════════
+   style.css  —  Tic Tac Toe Smart Game
+   College Innovative Assignment | Web Version
+   ═══════════════════════════════════════════════════════════
+
+   TABLE OF CONTENTS:
+   1. CSS Variables (Themes)
+   2. Reset & Base
+   3. Background Effect
+   4. Container & Layout
+   5. Header
+   6. Mode Selector
+   7. Scoreboard
+   8. Status Bar
+   9. Game Board & Cells
+   10. Cell Symbols & Animations
+   11. Control Buttons
+   12. Statistics Panel
+   13. Win/Draw Popup Overlay
+   14. Light Mode Theme
+   15. AI Thinking Dots
+   16. Responsive Design
+   ═══════════════════════════════════════════════════════════ */
+
+
+/* ── 1. CSS VARIABLES (Color Themes) ─────────────────────────
+   We store all colors as variables so switching dark/light
+   mode is as easy as changing one class on <body>.          */
+:root {
+  --bg:          #080c14;
+  --surface:     #0e1420;
+  --panel:       #131a28;
+  --border:      #1e2d45;
+  --x:           #ff4d6d;
+  --x-glow:      #ff4d6d55;
+  --o:           #00e5c3;
+  --o-glow:      #00e5c355;
+  --accent:      #4f8fff;
+  --accent2:     #7c3aed;
+  --win:         #ffd60a;
+  --win-glow:    #ffd60a44;
+  --text:        #e2e8f0;
+  --muted:       #64748b;
+  --cell-hover:  #1a2540;
+}
+
+
+/* ── 2. RESET & BASE ─────────────────────────────────────────
+   Remove default browser spacing and set base font.         */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px 16px 48px;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+
+/* ── 3. BACKGROUND GRID EFFECT ───────────────────────────────
+   Subtle dot-grid pattern using CSS gradients.              */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(79,143,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,143,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+/* ── 4. CONTAINER & LAYOUT ───────────────────────────────────
+   Centers all content in a max-width column.               */
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+
+/* ── 5. HEADER ───────────────────────────────────────────────*/
+.header {
+  text-align: center;
+  padding: 10px 0 4px;
+}
+
+.title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.5rem, 6vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: 5px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--o) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.6rem;
+  letter-spacing: 5px;
+  color: var(--muted);
+  margin-top: 5px;
+  text-transform: uppercase;
+}
+
+
+/* ── 6. MODE SELECTOR ────────────────────────────────────────
+   Toggle buttons for PvP vs PvC mode.                      */
+.mode-selector {
+  display: flex;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 5px;
+  width: 100%;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: transparent;
+  color: var(--muted);
+}
+
+/* Active mode button gets a gradient highlight */
+.mode-btn.active {
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(79,143,255,0.3);
+}
+
+.mode-btn:not(.active):hover {
+  color: var(--text);
+}
+
+
+/* ── 7. SCOREBOARD ───────────────────────────────────────────
+   Three score cards side by side.                          */
+.scoreboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.score-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+/* Colored top border line for each card */
+.score-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.x-card::before    { background: var(--x);      box-shadow: 0 0 8px var(--x); }
+.draw-card::before { background: var(--accent);  box-shadow: 0 0 8px var(--accent); }
+.o-card::before    { background: var(--o);       box-shadow: 0 0 8px var(--o); }
+
+.score-label {
+  font-size: 0.58rem;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.score-val {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.x-card    .score-val { color: var(--x);      text-shadow: 0 0 14px var(--x-glow); }
+.draw-card .score-val { color: var(--accent);  text-shadow: 0 0 14px rgba(79,143,255,0.4); }
+.o-card    .score-val { color: var(--o);       text-shadow: 0 0 14px var(--o-glow); }
+
+/* Score bump animation when score increases */
+.score-card.bump {
+  animation: bump 0.35s ease;
+}
+
+@keyframes bump {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.13); }
+  100% { transform: scale(1); }
+}
+
+
+/* ── 8. STATUS BAR ───────────────────────────────────────────
+   Shows whose turn it is or the result.                    */
+.status-bar {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 16px;
+  text-align: center;
+  font-size: 0.86rem;
+  letter-spacing: 2px;
+  transition: color 0.3s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ── 9. GAME BOARD & CELLS ───────────────────────────────────
+   3×3 grid with styled clickable cells.                    */
+.board-wrap {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 0 40px rgba(79,143,255,0.06);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.cell {
+  aspect-ratio: 1 / 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+
+/* Hover effect on empty cells */
+.cell:hover:not(.taken):not(.disabled) {
+  background: var(--cell-hover);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(79,143,255,0.18);
+}
+
+/* Taken cells should not show pointer */
+.cell.taken   { cursor: default; }
+.cell.disabled { cursor: not-allowed; }
+
+
+/* ── 10. CELL SYMBOLS & ANIMATIONS ──────────────────────────
+   X and O symbols with pop-in scale animation.            */
+.sym {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2rem, 9vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1;
+  /* Start invisible and small, animate to full size */
+  transform: scale(0);
+  animation: popIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.sym.x {
+  color: var(--x);
+  text-shadow: 0 0 20px var(--x-glow), 0 0 40px var(--x-glow);
+}
+
+.sym.o {
+  color: var(--o);
+  text-shadow: 0 0 20px var(--o-glow), 0 0 40px var(--o-glow);
+}
+
+/* Pop-in with slight overshoot (bounce feel) */
+@keyframes popIn {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  70%  { transform: scale(1.15) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+/* Ripple click effect using ::after pseudo element */
+.cell::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cell.ripple::after {
+  animation: ripple 0.45s ease-out;
+}
+
+@keyframes ripple {
+  0%   { transform: scale(0); opacity: 0.6; }
+  100% { transform: scale(18); opacity: 0; }
+}
+
+/* Winning cells — glowing gold highlight + pulse */
+.cell.winner {
+  background: linear-gradient(135deg, rgba(255,214,10,0.18), rgba(255,214,10,0.05));
+  border-color: var(--win);
+  box-shadow: 0 0 24px var(--win-glow), inset 0 0 14px var(--win-glow);
+  animation: winPulse 0.9s ease infinite alternate;
+}
+
+@keyframes winPulse {
+  from { box-shadow: 0 0 12px var(--win-glow), inset 0 0 8px var(--win-glow); }
+  to   { box-shadow: 0 0 32px var(--win-glow), inset 0 0 22px var(--win-glow); }
+}
+
+
+/* ── 11. CONTROL BUTTONS ─────────────────────────────────────
+   Restart, Reset Score, Dark/Light toggle.                 */
+.controls {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.ctrl-btn {
+  flex: 1;
+  padding: 11px 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+/* Each button has its own accent color on hover */
+.ctrl-btn.restart:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+  box-shadow: 0 0 14px rgba(34,197,94,0.2);
+}
+
+.ctrl-btn.reset:hover {
+  border-color: #f97316;
+  color: #f97316;
+  box-shadow: 0 0 14px rgba(249,115,22,0.2);
+}
+
+.ctrl-btn.dark-toggle:hover {
+  border-color: #a78bfa;
+  color: #a78bfa;
+  box-shadow: 0 0 14px rgba(167,139,250,0.2);
+}
+
+
+/* ── 12. STATISTICS PANEL ────────────────────────────────────
+   Key-value rows showing game stats.                       */
+.stats-panel {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.stats-title {
+  font-size: 0.62rem;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.74rem;
+}
+
+.stat-row:last-child { border-bottom: none; }
+
+.stat-key   { color: var(--muted); }
+.stat-value { color: var(--text); font-weight: bold; }
+
+
+/* ── 13. WIN/DRAW POPUP OVERLAY ──────────────────────────────
+   Full-screen blurred overlay with result card.           */
+.overlay {
+  display: none;          /* Hidden by default */
+  position: fixed;
+  inset: 0;
+  background: rgba(8,12,20,0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+/* JS adds .show to display it */
+.overlay.show {
+  display: flex;
+}
+
+.popup {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 38px 32px;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 0 60px rgba(79,143,255,0.25);
+  /* Slide-up entrance animation */
+  animation: slideUp 0.38s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px) scale(0.88); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+.popup-icon {
+  font-size: 3.2rem;
+  margin-bottom: 10px;
+}
+
+.popup-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.popup-sub {
+  color: var(--muted);
+  font-size: 0.76rem;
+  letter-spacing: 1px;
+  margin-bottom: 22px;
+  line-height: 1.7;
+}
+
+.popup-play-btn {
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 34px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 0 22px rgba(79,143,255,0.35);
+}
+
+.popup-play-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.04);
+}
+
+
+/* ── 14. LIGHT MODE THEME ────────────────────────────────────
+   Override variables when body has .light class.          */
+body.light {
+  --bg:          #f0f4ff;
+  --surface:     #ffffff;
+  --panel:       #ffffff;
+  --border:      #c5cae9;
+  --x:           #e63946;
+  --x-glow:      #e6394633;
+  --o:           #0891b2;
+  --o-glow:      #0891b233;
+  --accent:      #4361ee;
+  --accent2:     #7c3aed;
+  --win:         #f59e0b;
+  --win-glow:    #f59e0b33;
+  --text:        #1a1a2e;
+  --muted:       #64748b;
+  --cell-hover:  #eef2ff;
+}
+
+body.light::before {
+  background-image:
+    linear-gradient(rgba(67,97,238,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(67,97,238,0.07) 1px, transparent 1px);
+}
+
+
+/* ── 15. AI THINKING DOTS ANIMATION ─────────────────────────
+   Three animated dots shown when AI is thinking.          */
+.thinking-dots span {
+  display: inline-block;
+  animation: blink 1.1s infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.22s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.44s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.1; }
+  40%            { opacity: 1;   }
+}
+
+
+/* ── 16. RESPONSIVE DESIGN ───────────────────────────────────
+   Adjustments for small mobile screens.                   */
+@media (max-width: 380px) {
+  .controls {
+    flex-wrap: wrap;
+  }
+  .ctrl-btn {
+    flex: 1 1 45%;
+  }
+  .mode-btn {
+    font-size: 0.68rem;
+    padding: 9px 4px;
+  }
+}
